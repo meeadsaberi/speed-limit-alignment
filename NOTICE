@@ -1,0 +1,25 @@
+Speed Safety Atlas — third-party data and content
+==================================================
+
+The MIT License (see LICENSE) covers the original source code and methodology
+in this repository. It does NOT grant any rights over the third-party data and
+content below, each of which retains its own license:
+
+  * Street imagery in `assets/` is © the respective Mapillary contributors and
+    is licensed under CC BY-SA 4.0.
+      - assets/example_vru.jpg      © @Absawant, via Mapillary (CC BY-SA 4.0)
+      - assets/example_divided.jpg  © @geohacker, via Mapillary (CC BY-SA 4.0)
+
+  * Road-network geometry in `map/data/` derives from © OpenStreetMap
+    contributors (Open Database License, ODbL) and the Overture Maps Foundation.
+
+  * The 85th-percentile operating-speed field in `map/data/` is derived from
+    TomTom data provided for the ADB "AI for Safer Roads 2026" Challenge and
+    remains subject to TomTom's terms. Raw probe/speed data is not redistributed.
+
+  * The street-imagery method adapts V-RoAst (https://github.com/PongNJ/V-RoAst).
+
+References (Safe-System speed-limit guidance):
+  * WHO, Speed management: a road safety manual (2nd ed.)
+  * OECD/ITF, Speed and Crash Risk
+  * World Bank GRSF, Detecting Urban Clues for Road Safety

@@ -2,7 +2,7 @@
 
 **UNSW Sydney · ADB AI for Safer Roads Innovation Challenge 2026**
 
-Released under the [MIT License](LICENSE).
+Released under the [MIT License](LICENSE). Third-party data and imagery retain their own licenses — see [NOTICE](NOTICE).
 
 This work answers the challenge question directly on **where the posted speed limits are misaligned with road function and vulnerable road user (VRU) exposure?** The focus is not on whether drivers are speeding, but on whether the posted limit itself is appropriate for the road environment, particularly where pedestrians and cyclists are present. The goal is to support evidence-based speed-limit reviews across Asia and the Pacific.
 
