@@ -78,9 +78,9 @@ python map/build_alignment_map.py   # refresh the map layers
 Live map: **https://meeadsaberi.github.io/speed-limit-alignment/map/**
 
 ## Data note
-This is a lean **reproduction** repo. The raw input network and the per-link score **CSV** carry
-**TomTom-derived** operating speeds (commercial, challenge-provided) and are **not** committed —
-they are provided to ADB through the submission platform. The published per-city map GeoJSON
+The raw input network and the per-link score **CSV** carry
+**TomTom-derived** operating speeds (commercial, challenge-provided) and are **not** included here —
+they are provided by ADB through the submission platform. The published per-city map GeoJSON
 includes an 85th-percentile operating-speed field (a derived aggregate) so the interactive map
 renders; raw probe data is not redistributed. `./run_all.sh` over the challenge dataset
 reproduces the score and map layers locally.
