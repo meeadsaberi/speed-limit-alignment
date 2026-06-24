@@ -48,8 +48,8 @@ land-use estimate is wrong — in both directions:
 
 <table>
 <tr>
-<td width="50%"><img src="assets/example_vru.jpg" width="100%"></td>
-<td width="50%"><img src="assets/example_divided.jpg" width="100%"></td>
+<td width="50%" align="center"><img src="assets/example_vru.jpg" height="240"></td>
+<td width="50%" align="center"><img src="assets/example_divided.jpg" height="240"></td>
 </tr>
 <tr>
 <td>Data labels this link <b>rural</b>, but the photo shows pedestrians and cyclists mixing with traffic → reclassified to <b>30 km/h</b> and flagged <b>High</b> (a false-safe caught).</td>
