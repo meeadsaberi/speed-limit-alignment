@@ -59,6 +59,14 @@ land-use estimate is wrong — in both directions:
 
 *Street imagery © [@Absawant](https://www.mapillary.com/app/?pKey=1447251907128939) (left) and [@geohacker](https://www.mapillary.com/app/?pKey=187713106534818) (right), via Mapillary, licensed [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
 
+## Results
+<p align="center"><img src="assets/proposed_limit_map.png" width="95%"></p>
+
+*Recommended (proposed) speed limits per road link across the two study areas. Colour is the
+Safe-System-appropriate limit (green 30 → red 110 km/h); the method only lowers a limit, never
+raises it. In Thailand about nine in ten links are recommended for a reduction; in Maharashtra the
+posted limits are already broadly aligned. Network © OpenStreetMap / Overture.*
+
 ## Repository layout
 ```
 model/                       data preparation + VLM imagery pipeline
