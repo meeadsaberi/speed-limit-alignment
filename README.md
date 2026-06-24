@@ -10,7 +10,7 @@ This work answers the challenge question directly on **where the posted speed li
 The method is deliberately simple, scalable, and auditable. For every road link, we do five things:
 
 1. **Classify the road context** from road function and land use, then **refine it with street
-   imagery** where available — a vision-language model (OpenAI Chat GPT5.5) reads the Mapillary photo, and its reading
+   imagery** where available, a vision-language model (OpenAI Chat GPT5.5) reads the Mapillary photo, and its reading
    is kept in its own columns alongside the supplied data rather than overwriting it. This directly
    addresses the challenge's caution that the `LandUse` and `SpeedLimit` fields are estimates.
 2. **Assign the appropriate Safe-System maximum** for that context, from a cited reference table:
@@ -19,8 +19,8 @@ The method is deliberately simple, scalable, and auditable. For every road link,
    |---|---|
    | Pedestrians and cyclists mixing with traffic | **30 km/h** |
    | Urban, likely VRU presence, at-grade intersections | **50 km/h** |
-   | Rural undivided (head-on / run-off risk) | **70 km/h** |
-   | Divided / limited-access motorway, no VRU exposure | **100–110 km/h** |
+   | Rural undivided (head-on/run-off risk) | **70 km/h** |
+   | Divided/limited-access motorway, no VRU exposure | **100–110 km/h** |
 
 3. **Recommend a reduction only.** The recommended limit is the lower of the posted limit and the
    Safe-System maximum; the method never raises a limit.
@@ -52,8 +52,8 @@ land-use estimate is wrong — in both directions:
 <td width="50%" align="center"><img src="assets/example_divided.jpg" height="240"></td>
 </tr>
 <tr>
-<td>Data labels this link <b>rural</b>, but the photo shows pedestrians and cyclists mixing with traffic → reclassified to <b>30 km/h</b> and flagged <b>High</b> (a false-safe caught).</td>
-<td>Another <b>rural</b>-labelled link is in fact a <b>divided, limited-access</b> road → kept in the <b>100 km/h</b> band and cleared (a false alarm avoided).</td>
+<td>Data labels this road <b>rural</b>, but the photo shows pedestrians and cyclists mixing with traffic → reclassified to <b>30 km/h</b> and flagged <b>High</b> risk.</td>
+<td>Another <b>rural</b>-labelled road is in fact a <b>divided, limited-access</b> road → kept in the <b>100 km/h</b> band and cleared.</td>
 </tr>
 </table>
 
