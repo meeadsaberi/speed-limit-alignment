@@ -94,4 +94,4 @@ reproduces the score and map layers locally.
 
 ## Attribution
 Network © OpenStreetMap contributors, Overture Maps Foundation · speeds: TomTom
-(challenge-provided) · imagery © Mapillary. Secrets in `.env` are gitignored.
+(challenge-provided) · imagery © Mapillary.
