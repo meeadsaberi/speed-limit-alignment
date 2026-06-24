@@ -42,6 +42,23 @@ World Bank GRSF, [*Detecting Urban Clues for Road Safety*](https://documents.wor
 The street-imagery method adapts [**V-RoAst**](https://github.com/PongNJ/V-RoAst), which reads
 road-safety attributes from street imagery using vision-language models.
 
+## How the method uses street imagery
+The vision-language model reads each street photo and corrects the road context where the supplied
+land-use estimate is wrong — in both directions:
+
+<table>
+<tr>
+<td width="50%"><img src="assets/example_vru.jpg" width="100%"></td>
+<td width="50%"><img src="assets/example_divided.jpg" width="100%"></td>
+</tr>
+<tr>
+<td>Data labels this link <b>rural</b>, but the photo shows pedestrians and cyclists mixing with traffic → reclassified to <b>30 km/h</b> and flagged <b>High</b> (a false-safe caught).</td>
+<td>Another <b>rural</b>-labelled link is in fact a <b>divided, limited-access</b> road → kept in the <b>100 km/h</b> band and cleared (a false alarm avoided).</td>
+</tr>
+</table>
+
+*Street imagery © [@Absawant](https://www.mapillary.com/app/?pKey=1447251907128939) (left) and [@geohacker](https://www.mapillary.com/app/?pKey=187713106534818) (right), via Mapillary, licensed [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).*
+
 ## Repository layout
 ```
 model/                       data preparation + VLM imagery pipeline
