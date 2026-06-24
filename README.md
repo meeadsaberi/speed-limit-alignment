@@ -2,10 +2,8 @@
 
 **UNSW Sydney · ADB AI for Safer Roads Innovation Challenge 2026**
 
-This work answers the challenge question directly: **where are posted speed limits misaligned
-with road function and vulnerable-road-user (VRU) exposure?** The focus is not on whether drivers
-speed, but on whether the posted limit itself is appropriate for the road — to support
-evidence-based speed-limit review across Asia and the Pacific.
+This work answers the challenge question directly on **where the posted speed limits are misaligned with road function and vulnerable road user (VRU) exposure?** The focus is not on whether drivers are speeding, but on whether the posted limit itself is appropriate for the road environment, particularly where pedestrians and cyclists are present. The goal is to support evidence-based speed-limit reviews across Asia and the Pacific.
+
 
 ## Method
 
