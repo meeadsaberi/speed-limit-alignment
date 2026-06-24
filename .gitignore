@@ -1,0 +1,41 @@
+# Secrets — never commit
+.env
+*.token
+secrets/
+
+# Heavy / derived / license-restricted — kept local, NOT in this lean repo:
+# raw network, score outputs, per-link CSV (TomTom-derived), submission bundles.
+/data/
+*.gpkg
+*.parquet
+*.csv
+*.zip
+cache/
+imagery/
+
+# GeoJSON ignored by default; ONLY the per-city interactive-map layers are published
+*.geojson
+!map/data/align_thailand.geojson
+!map/data/align_maharashtra.geojson
+
+# Bulk street-photo thumbnails — not published (map runs without photos)
+map/img/
+
+# Workspace folders that are not part of the lean reproduction repo
+docs/
+submission/
+archive/
+node_modules/
+.claude/
+
+# Standalone context-layer / utility scripts not needed for the core score + map
+model/population.py
+model/osm_pois_all.py
+model/backfill_images.py
+
+# Python / OS
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store

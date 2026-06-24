@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Speed-Limit Alignment — ADB AI for Safer Roads</title>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+<style>
+  body { margin:0; font-family: system-ui, sans-serif; }
+  #map { position:absolute; inset:0; }
+  .panel { position:absolute; top:12px; left:12px; z-index:1; background:#fff; padding:12px 14px;
+    border-radius:8px; box-shadow:0 1px 6px rgba(0,0,0,.3); max-width:280px; font-size:13px; }
+  .panel h1 { font-size:15px; margin:0 0 2px; } .muted{color:#666;font-size:11px;}
+  .row{margin:6px 0;} label{font-size:13px;} select{font-size:13px;}
+  .seg{display:flex;border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-top:4px;}
+  .seg button{flex:1;border:0;background:#f4f4f4;padding:6px 4px;font-size:12px;cursor:pointer;}
+  .seg button.on{background:#2E75B6;color:#fff;font-weight:600;}
+  .legend i{display:inline-block;width:14px;height:7px;margin-right:6px;vertical-align:middle;border-radius:2px;}
+  .maplibregl-popup-content{font-size:12px;line-height:1.4;max-width:300px;}
+  .kpi{font-weight:600;}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="panel">
+  <h1>Speed-Limit Alignment</h1>
+  <div class="muted">Are posted limits appropriate? · UNSW Sydney · ADB AI for Safer Roads</div>
+  <div class="row"><label>Region:
+    <select id="region"><option value="thailand">Thailand</option>
+      <option value="maharashtra">Maharashtra</option></select></label></div>
+  <div class="row">Colour links by:
+    <div class="seg" id="view">
+      <button data-v="speed_limit" class="on">Posted limit</button>
+      <button data-v="recommended_limit">Recommended</button>
+      <button data-v="risk">Risk</button>
+    </div></div>
+  <div class="row"><label><input type="checkbox" id="hiOnly"> High-risk only</label></div>
+  <div class="row"><label><input type="checkbox" id="revOnly"> Needs review only
+    <span class="muted">(unverified class, no imagery)</span></label></div>
+  <div class="legend" id="legend" style="margin-top:6px;"></div>
+  <div class="row muted" id="stats"></div>
+  <div class="muted" style="margin-top:6px;">Click a link for posted vs recommended limit,
+    the evidence (imagery / data), and the street photo where available.</div>
+</div>
+<script>
+const CENTER={thailand:[101.1,14.68],maharashtra:[75.76,19.33]};
+const LIMIT_COLOR=['interpolate',['linear'],['coalesce',['get','speed_limit'],0],
+  30,'#1a9850',50,'#a6d96a',70,'#fee08b',90,'#fdae61',110,'#d73027'];
+function limitColor(field){return ['interpolate',['linear'],['coalesce',['get',field],0],
+  30,'#1a9850',50,'#a6d96a',70,'#fee08b',90,'#fdae61',110,'#d73027'];}
+const RISK_COLOR=['match',['get','risk_flag'],'High','#d73027','Medium','#fdae61',
+  'Low','#fee08b','Aligned','#cccccc','#cccccc'];
+const LEGENDS={
+  speed_limit:'<b>Posted limit (km/h)</b><div style="height:10px;border-radius:3px;margin:3px 0;background:linear-gradient(to right,#1a9850,#a6d96a,#fee08b,#fdae61,#d73027)"></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#666"><span>30</span><span>70</span><span>110</span></div>',
+  recommended_limit:'<b>Recommended limit (km/h)</b><div style="height:10px;border-radius:3px;margin:3px 0;background:linear-gradient(to right,#1a9850,#a6d96a,#fee08b,#fdae61,#d73027)"></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#666"><span>30</span><span>70</span><span>110</span></div>',
+  risk:'<b>Risk flag</b><div><i style="background:#d73027"></i>High (VRU road, limit too high, live)</div><div><i style="background:#fdae61"></i>Medium</div><div><i style="background:#fee08b"></i>Low (rural)</div><div><i style="background:#cccccc"></i>Aligned</div>'
+};
+let view='speed_limit';
+const map=new maplibregl.Map({container:'map',style:{version:8,
+  sources:{carto:{type:'raster',tiles:['https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'],
+    tileSize:256,attribution:'© OpenStreetMap, Overture · © CARTO · imagery © Mapillary'}},
+  layers:[{id:'bgc',type:'background',paint:{'background-color':'#eaeef2'}},
+          {id:'bg',type:'raster',source:'carto'}]},center:CENTER.thailand,zoom:6});
+map.addControl(new maplibregl.NavigationControl(),'top-right');
+
+function paint(){
+  if(!map.getLayer('links'))return;
+  map.setPaintProperty('links','line-color', view==='risk'?RISK_COLOR:limitColor(view));
+  map.setPaintProperty('links','line-width', view==='risk'
+    ? ['match',['get','risk_flag'],'High',['interpolate',['linear'],['zoom'],6,1.6,12,5],
+        'Medium',['interpolate',['linear'],['zoom'],6,1.2,12,3.5],['interpolate',['linear'],['zoom'],6,0.7,12,2]]
+    : ['interpolate',['linear'],['zoom'],6,1.1,10,2.2,14,5]);
+  document.getElementById('legend').innerHTML=LEGENDS[view];
+}
+function applyFilter(){ if(!map.getLayer('links'))return;
+  const hi=document.getElementById('hiOnly').checked, rev=document.getElementById('revOnly').checked;
+  const f=[]; if(hi)f.push(['==',['get','risk_flag'],'High']);
+  if(rev)f.push(['==',['get','needs_review'],'Yes']);
+  map.setFilter('links', f.length?['all',...f]:null);
+  updateStats(); }
+function loadRegion(r){
+  if(map.getLayer('links'))map.removeLayer('links');
+  if(map.getSource('al'))map.removeSource('al');
+  map.addSource('al',{type:'geojson',data:`data/align_${r}.geojson`});
+  map.addLayer({id:'links',type:'line',source:'al',paint:{'line-opacity':0.9}});
+  paint(); applyFilter(); map.flyTo({center:CENTER[r],zoom:6.2}); map.once('idle',updateStats);
+}
+function updateStats(){
+  if(!map.getSource('al'))return;
+  const hiF=document.getElementById('hiOnly').checked, revF=document.getElementById('revOnly').checked;
+  const f=map.querySourceFeatures('al'); const seen=new Set(); let n=0,hi=0,rev=0;
+  for(const x of f){const id=x.properties.uid; if(seen.has(id))continue; seen.add(id);
+    if(hiF && x.properties.risk_flag!=='High')continue;
+    if(revF && x.properties.needs_review!=='Yes')continue;
+    n++; if(x.properties.risk_flag==='High')hi++; if(x.properties.needs_review==='Yes')rev++;}
+  document.getElementById('stats').innerHTML=`<span class="kpi">${n}</span> links shown · `+
+    `<span class="kpi">${hi}</span> High-risk · <span class="kpi">${rev}</span> need classification review`;
+}
+document.querySelectorAll('#view button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#view button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); view=b.dataset.v; paint();});
+document.getElementById('region').onchange=e=>loadRegion(e.target.value);
+document.getElementById('hiOnly').onchange=applyFilter;
+document.getElementById('revOnly').onchange=applyFilter;
+map.on('load',()=>loadRegion('thailand'));
+
+const CLABEL={ped_cyclist_mix:'Pedestrian/cyclist mix',urban_vru:'Urban / VRU present',
+  intersection:'At-grade intersection',rural_undivided:'Rural undivided',
+  divided_limited_access_no_vru:'Divided / limited-access'};
+const SRCLABEL={imagery_vlm:'from street imagery',data_prior:'from land-use data'};
+function popupHTML(p){
+  const f=(x,u='')=>(x===''||x==null||x==='None'||(typeof x==='number'&&isNaN(x)))?'—':`${x}${u}`;
+  const cls=x=>CLABEL[x]||f(x);
+  const v85=p.speed_85!=null?Math.round(p.speed_85):null;
+  const photo=p.vlm_img?`<img src="img/${p.vlm_img}" width="270" style="border-radius:4px;margin-top:6px">`
+    :`<div class="muted" style="margin-top:6px">no street image available for this link</div>`;
+  const review=p.needs_review==='Yes'
+    ?`<div style="background:#fff3cd;border:1px solid #ffe69c;border-radius:4px;padding:5px 7px;margin:6px 0;color:#664d03">
+        ⚠ <b>Verify classification</b> (no imagery). ${f(p.review_reason)}</div>`
+    :(p.imagery_confirmed_conflict==='Yes'
+    ?`<div style="background:#fde2e1;border:1px solid #f5b5b1;border-radius:4px;padding:5px 7px;margin:6px 0;color:#842029">
+        ✓ <b>Imagery-confirmed conflict.</b> ${f(p.review_reason)}</div>`:'');
+  const changed=p.context_data_prior!==p.context_final;
+  const row=(a,b)=>`<tr><td style="color:#666;padding:1px 8px 1px 0;white-space:nowrap">${a}</td><td><b>${b}</b></td></tr>`;
+  return `<b>${f(p.road_class)}</b> <span class="muted">· ${f(p.land_use)} · ${f(p.uid)}</span>
+     <hr style="margin:5px 0;border:none;border-top:1px solid #eee">
+     <table style="border-collapse:collapse">
+       ${row('Current posted limit', f(p.speed_limit,' km/h'))}
+       ${row('85th-pct operating speed', v85!=null?v85+' km/h':'—')}
+     </table>
+     <div style="margin:6px 0 2px;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em">Classification</div>
+     <table style="border-collapse:collapse">
+       ${row('Current (data)', cls(p.context_data_prior)+` <span style="font-weight:400;color:#888">→ ${f(p.data_prior_limit,' km/h')}</span>`)}
+       ${row('Proposed '+(changed?'(revised)':''), cls(p.context_final)+` <span style="font-weight:400;color:#888">→ ${f(p.safe_system_max,' km/h')}</span>`)}
+       ${row('Evidence', `<span style="font-weight:400">${SRCLABEL[p.context_source]||f(p.context_source)}</span>`)}
+     </table>
+     <div style="margin-top:6px;padding-top:5px;border-top:1px solid #eee">
+       Recommended limit: <b>${f(p.recommended_limit,' km/h')}</b>
+       ${p.misalignment>0?`<span class="muted">(reduce ${f(p.misalignment)} km/h)</span>`:'<span class="muted">(already aligned)</span>'}<br>
+       Priority: <b>${f(p.risk_flag)}</b></div>
+     ${review}${photo}`;
+}
+map.on('click','links',e=>{
+  new maplibregl.Popup({maxWidth:'310px'}).setLngLat(e.lngLat).setHTML(popupHTML(e.features[0].properties)).addTo(map);
+});
+window.map=map; window.popupHTML=popupHTML;   // exposed for automated screenshot / debugging
+map.on('mouseenter','links',()=>map.getCanvas().style.cursor='pointer');
+map.on('mouseleave','links',()=>map.getCanvas().style.cursor='');
+</script>
+</body>
+</html>
