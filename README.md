@@ -7,10 +7,10 @@ This work answers the challenge question directly on **where the posted speed li
 
 ## Method
 
-The method is deliberately simple, scalable and auditable. For every road link we do five things:
+The method is deliberately simple, scalable, and auditable. For every road link, we do five things:
 
 1. **Classify the road context** from road function and land use, then **refine it with street
-   imagery** where available — a vision-language model reads the Mapillary photo, and its reading
+   imagery** where available — a vision-language model (OpenAI Chat GPT5.5) reads the Mapillary photo, and its reading
    is kept in its own columns alongside the supplied data rather than overwriting it. This directly
    addresses the challenge's caution that the `LandUse` and `SpeedLimit` fields are estimates.
 2. **Assign the appropriate Safe-System maximum** for that context, from a cited reference table:
